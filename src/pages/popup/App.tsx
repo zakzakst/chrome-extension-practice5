@@ -6,22 +6,32 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { format } from "date-fns";
 import { toast } from "sonner";
+
+const formatStrItems: string[] = [
+  "yyyy-MM-dd",
+  "yyyy/MM/dd",
+  "yy年MM月dd日",
+  "MM-dd",
+  "MM/dd",
+  "MM月dd日",
+];
 
 const App = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [startTime, setStartTime] = useState<string | undefined>("");
   const [endTime, setEndTime] = useState<string | undefined>("");
+  const [formatStr, setFormatStr] = useState<string>(formatStrItems[0]);
 
   const dateText = useMemo<string>(() => {
     if (!date) return "";
-    return date.toDateString();
-  }, [date]);
+    return format(date, formatStr);
+  }, [date, formatStr]);
 
   const timeText = useMemo<string>(() => {
     if (!startTime && !endTime) {
@@ -80,16 +90,17 @@ const App = () => {
           </div>
           <div className="grid grid-cols-[40px_1fr] items-center gap-2">
             <div>書式</div>
-            <Select>
+            <Select
+              defaultValue={formatStrItems[0]}
+              onValueChange={setFormatStr}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="書式選択" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
-                </SelectGroup>
+                {formatStrItems.map((formatStr) => (
+                  <SelectItem value={formatStr}>{formatStr}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
